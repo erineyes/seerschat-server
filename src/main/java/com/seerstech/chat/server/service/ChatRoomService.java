@@ -1,5 +1,6 @@
 package com.seerstech.chat.server.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import com.seerstech.chat.server.constant.ChatMessageEnum;
 import com.seerstech.chat.server.constant.ChatNotificationEnum;
 import com.seerstech.chat.server.constant.ErrorCodeEnum;
@@ -18,18 +19,14 @@ import com.seerstech.chat.server.vo.ChatMessage;
 import com.seerstech.chat.server.vo.ChatRoom;
 import com.seerstech.chat.server.vo.ChatRoomUser;
 import com.seerstech.chat.server.vo.GetRoomListResponse;
-import com.seerstech.chat.server.vo.GetRoomMessageListResponse;
 import com.seerstech.chat.server.vo.GetRoomUserListResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -227,7 +224,13 @@ public class ChatRoomService {
             joiner.setUserId(userId);
             joiner.setUserJoinedRoom(true);
             joiner.setCreatedTime(ts);
-            mChatRoomUserRepository.save(joiner);
+            try {
+            	mChatRoomUserRepository.save(joiner);
+            } catch(DuplicateKeyException e) {
+            	return ErrorCodeEnum.CODE_USER_ALREADY_EXIST_IN_ROOM;
+            } catch(Exception e) {
+            	return ErrorCodeEnum.CODE_USER_ALREADY_EXIST_IN_ROOM;
+            }
             
             ChatMessage joinerMessage = ChatMessage.builder()
             								.messageId(UUID.randomUUID().toString())

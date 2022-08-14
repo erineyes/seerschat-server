@@ -43,6 +43,7 @@ public class RedisConfig {
         return new ChannelTopic("chatroom");
     }
     
+    
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
     	RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration(); 

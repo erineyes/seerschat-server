@@ -217,8 +217,8 @@ public class ChatRoomController {
     	boolean existUser = mChatUserService.existsByUserId(req.getUserId());
     	boolean existRoom = mChatRoomService.existRoomByRoomId(req.getRoomId());
     	if(existUser) {
-        	boolean exist = mChatRoomService.existUserInRoom(req.getUserId(), req.getRoomId());
-        	if(!exist) {
+    		ErrorCodeEnum status = mChatRoomService.joinRoom(req.getUserId(), req.getRoomId());
+    		if(status==ErrorCodeEnum.CODE_SUCCESS) {
     	    	mChatRoomService.joinRoom(req.getUserId(), req.getRoomId());
     	    	return ResponseEntity.ok(new InviteUserToRoomResponse());
         	} else {
